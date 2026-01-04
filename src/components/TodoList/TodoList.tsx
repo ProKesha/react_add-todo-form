@@ -1,21 +1,16 @@
-import { TodoInfo } from '../TodoInfo/TodoInfo';
+import { Todo } from '../../types';
+import { TodoInfo } from '../TodoInfo';
 
 type TodoListProps = {
-  todos: Array<{
-    id: number;
-    title: string;
-    completed: boolean;
-    user: {
-      name: string;
-      email: string;
-    };
-  }>;
+  todos: Todo[];
 };
 
-export const TodoList = ({ todos }: TodoListProps) => (
-  <section className="TodoList">
-    {todos.map(todo => (
-      <TodoInfo key={todo.id} todo={todo} />
-    ))}
-  </section>
-);
+export const TodoList = ({ todos }: TodoListProps) => {
+  return (
+    <section className="TodoList">
+      {todos.map(todo => (
+        <TodoInfo key={todo.id} todo={todo} />
+      ))}
+    </section>
+  );
+};

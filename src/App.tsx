@@ -3,22 +3,25 @@ import './App.scss';
 
 import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
-import { TodoList } from './components/TodoList/TodoList';
+import { Todo } from './types';
+import { TodoList } from './components/TodoList';
 
 export const App = () => {
-  const [todos, setTodos] = useState(
+  // Додаємо user до всіх стартових todo
+  const [todos, setTodos] = useState<Todo[]>(
     todosFromServer.map(todo => ({
       ...todo,
-      user: usersFromServer.find(u => u.id === todo.userId),
+      user: usersFromServer.find(u => u.id === todo.userId)!,
     })),
   );
+
   const [title, setTitle] = useState('');
   const [userId, setUserId] = useState(0);
 
   const [titleError, setTitleError] = useState(false);
   const [userError, setUserError] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     let hasError = false;
@@ -37,20 +40,20 @@ export const App = () => {
       return;
     }
 
-    const user = usersFromServer.find(u => u.id === userId);
+    const foundUser = usersFromServer.find(u => u.id === userId);
 
-    if (!user) {
+    if (!foundUser) {
       return;
     }
 
-    const maxId = todos.length ? Math.max(...todos.map(todo => todo.id)) : 0;
+    const maxId = todos.reduce((max, t) => (t.id > max ? t.id : max), 0);
 
-    const newTodo = {
+    const newTodo: Todo = {
       id: maxId + 1,
       title,
       userId,
       completed: false,
-      user,
+      user: foundUser,
     };
 
     setTodos([...todos, newTodo]);
@@ -62,7 +65,7 @@ export const App = () => {
 
   return (
     <div className="App">
-      <h1>Add todo form</h1>
+      <h1>Add Todo Form</h1>
 
       <form onSubmit={handleSubmit}>
         <div className="field">
@@ -89,9 +92,9 @@ export const App = () => {
             }}
           >
             <option value={0}>Choose a user</option>
-            {usersFromServer.map(user => (
-              <option key={user.id} value={user.id}>
-                {user.name}
+            {usersFromServer.map(u => (
+              <option key={u.id} value={u.id}>
+                {u.name}
               </option>
             ))}
           </select>
