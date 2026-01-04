@@ -7,12 +7,21 @@ import { Todo } from './types';
 import { TodoList } from './components/TodoList';
 
 export const App = () => {
-  // Додаємо user до всіх стартових todo
   const [todos, setTodos] = useState<Todo[]>(
-    todosFromServer.map(todo => ({
-      ...todo,
-      user: usersFromServer.find(u => u.id === todo.userId)!,
-    })),
+    todosFromServer
+      .map(todo => {
+        const user = usersFromServer.find(u => u.id === todo.userId);
+
+        if (!user) {
+          return null;
+        }
+
+        return {
+          ...todo,
+          user,
+        };
+      })
+      .filter((todo): todo is Todo => todo !== null),
   );
 
   const [title, setTitle] = useState('');
